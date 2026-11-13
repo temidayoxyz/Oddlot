@@ -30,11 +30,11 @@ Oddlot is a lightweight, client-side multi-game browser arcade platform. Each ga
 
 ## Local Development
 
-Install dependencies and start the Vite development server:
+Install dependencies (this repository tracks dependencies with `bun.lock`) and start the Vite development server:
 
 ```bash
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
 Open `http://localhost:3000` in your browser.
