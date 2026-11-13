@@ -4,6 +4,9 @@ import heroShowcaseImg from '../../assets/images/oddlot_hero_showcase_1794605851
 import { getLevelFromXp } from '../../game/progression';
 import { loadLifetimeStats } from '../../game/storage';
 import { LifetimeStats } from '../../game/types';
+import { getLevelFromXp as getMeteorLevelFromXp } from '../../games/meteor-shower/progression';
+import { loadLifetimeStats as loadMeteorStats } from '../../games/meteor-shower/storage';
+import { LifetimeStats as MeteorLifetimeStats } from '../../games/meteor-shower/types';
 import { GameRegistryEntry, ODDLOT_GAMES, getPlayableGames } from '../games';
 import { buildAppUrl, resolveGitHubRepositoryUrl } from '../router';
 import { OddlotLogoMark, PlatformHeader } from './PlatformHeader';
@@ -24,14 +27,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   const [heroImgFailed, setHeroImgFailed] = useState(false);
   const [failedCovers, setFailedCovers] = useState<Record<string, boolean>>({});
   const [skyPopStats, setSkyPopStats] = useState<LifetimeStats | null>(null);
+  const [meteorStats, setMeteorStats] = useState<MeteorLifetimeStats | null>(null);
 
   useEffect(() => {
     document.title = 'Oddlot — Original Browser Games';
     document.body.dataset.state = 'platform';
 
     let active = true;
-    void loadLifetimeStats().then((stats) => {
-      if (active) setSkyPopStats(stats);
+    void Promise.all([loadLifetimeStats(), loadMeteorStats()]).then(([sky, meteor]) => {
+      if (!active) return;
+      setSkyPopStats(sky);
+      setMeteorStats(meteor);
     });
     return () => {
       active = false;
@@ -167,37 +173,55 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </div>
 
             <div className="mt-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-              {ODDLOT_GAMES.map((game, index) => (
-                <GameCatalogCard
-                  key={game.slug}
-                  game={game}
-                  featured={index === 0}
-                  basePath={basePath}
-                  coverFailed={Boolean(failedCovers[game.slug])}
-                  onCoverError={() =>
-                    setFailedCovers((prev) => ({ ...prev, [game.slug]: true }))
-                  }
-                  onPlay={handleLinkToGame(game.slug)}
-                  skyPopStats={game.slug === 'skypop' ? skyPopStats : null}
-                />
-              ))}
+              {ODDLOT_GAMES.map((game) => {
+                const statSummary =
+                  game.slug === 'skypop' && skyPopStats && (skyPopStats.gamesPlayed > 0 || skyPopStats.highScore > 0)
+                    ? {
+                        highScore: skyPopStats.highScore,
+                        level: getLevelFromXp(skyPopStats.totalXp).level,
+                        totalXp: skyPopStats.totalXp,
+                      }
+                    : game.slug === 'meteor-shower' &&
+                        meteorStats &&
+                        (meteorStats.gamesPlayed > 0 || meteorStats.highScore > 0)
+                      ? {
+                          highScore: meteorStats.highScore,
+                          level: getMeteorLevelFromXp(meteorStats.totalXp).level,
+                          totalXp: meteorStats.totalXp,
+                        }
+                      : null;
+
+                return (
+                  <GameCatalogCard
+                    key={game.slug}
+                    game={game}
+                    basePath={basePath}
+                    coverFailed={Boolean(failedCovers[game.slug])}
+                    onCoverError={() =>
+                      setFailedCovers((prev) => ({ ...prev, [game.slug]: true }))
+                    }
+                    onPlay={handleLinkToGame(game.slug)}
+                    statSummary={statSummary}
+                  />
+                );
+              })}
 
               {/* Honest Studio Expansion Slot */}
-              <div className="lg:col-span-4 rounded-2xl border border-dashed border-white/15 bg-[#101623]/70 p-6 sm:p-7 flex flex-col justify-between">
+              <div className="lg:col-span-12 rounded-2xl border border-dashed border-white/15 bg-[#101623]/70 p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <div className="flex items-center justify-between text-xs text-slate-400">
-                    <span>Coming Soon</span>
+                  <div className="flex items-center gap-2 text-xs text-slate-400">
                     <Compass className="w-4 h-4 text-amber-300/80" />
+                    <span>Coming Soon</span>
                   </div>
-                  <h3 className="mt-4 font-display text-2xl font-bold tracking-tight text-white text-balance">
+                  <h3 className="mt-2 font-display text-xl sm:text-2xl font-bold tracking-tight text-white">
                     More Oddlot titles on the way
                   </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-slate-400">
-                    Oddlot is structured so new standalone games drop straight into this catalog without changing the platform around them. Expect new score-attack experiments and small tactile puzzles here over time.
+                  <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-slate-400">
+                    Oddlot is structured so new standalone games drop straight into this catalog without changing the platform around them. Expect new score-attack experiments and tactile puzzles over time.
                   </p>
                 </div>
 
-                <div className="mt-8 pt-5 border-t border-white/10 text-xs text-slate-400">
+                <div className="shrink-0 text-xs text-slate-400">
                   Built incrementally · No accounts or installs required
                 </div>
               </div>
@@ -305,36 +329,28 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
 interface GameCatalogCardProps {
   game: GameRegistryEntry;
-  featured: boolean;
   basePath: string;
   coverFailed: boolean;
   onCoverError: () => void;
   onPlay: (e: React.MouseEvent) => void;
-  skyPopStats: LifetimeStats | null;
+  statSummary: { highScore: number; level: number; totalXp: number } | null;
 }
 
 const GameCatalogCard: React.FC<GameCatalogCardProps> = ({
   game,
-  featured,
   basePath,
   coverFailed,
   onCoverError,
   onPlay,
-  skyPopStats,
+  statSummary,
 }) => {
   const href = buildAppUrl({ kind: 'game', slug: game.slug }, basePath);
   const isPlayable = game.status === 'playable';
-  const hasPlayedSkyPop = skyPopStats && (skyPopStats.gamesPlayed > 0 || skyPopStats.highScore > 0);
-  const skyPopLevel = skyPopStats ? getLevelFromXp(skyPopStats.totalXp) : null;
 
   return (
-    <article
-      className={`${
-        featured ? 'lg:col-span-8' : 'lg:col-span-4'
-      } rounded-2xl border border-white/12 bg-[#121826] overflow-hidden grid grid-cols-1 md:grid-cols-12`}
-    >
+    <article className="lg:col-span-6 rounded-2xl border border-white/12 bg-[#121826] overflow-hidden flex flex-col">
       {/* Thumbnail Cover */}
-      <div className="md:col-span-6 relative aspect-[4/3] md:aspect-auto md:min-h-[300px] bg-slate-900 overflow-hidden">
+      <div className="relative aspect-[16/10] bg-slate-900 overflow-hidden">
         {game.coverImage && !coverFailed ? (
           <img
             src={game.coverImage}
@@ -357,7 +373,7 @@ const GameCatalogCard: React.FC<GameCatalogCardProps> = ({
       </div>
 
       {/* Card Body */}
-      <div className="md:col-span-6 p-6 sm:p-7 flex flex-col justify-between">
+      <div className="flex-1 p-6 sm:p-7 flex flex-col justify-between">
         <div>
           <div className="flex items-center gap-2 text-xs text-slate-400">
             <span>{game.genre}</span>
@@ -386,13 +402,16 @@ const GameCatalogCard: React.FC<GameCatalogCardProps> = ({
         </div>
 
         <div className="mt-6 pt-5 border-t border-white/10">
-          {hasPlayedSkyPop && skyPopStats && skyPopLevel && (
+          {statSummary && (
             <div className="mb-4 flex items-center justify-between text-xs text-slate-300 tabular-nums">
               <span>
-                Your Best: <strong className="text-white font-semibold">{skyPopStats.highScore.toLocaleString()}</strong>
+                Your Best:{' '}
+                <strong className="text-white font-semibold">
+                  {statSummary.highScore.toLocaleString()}
+                </strong>
               </span>
               <span className="font-mono-num text-sky-300">
-                Lv {skyPopLevel.level} · {skyPopStats.totalXp.toLocaleString()} XP
+                Lv {statSummary.level} · {statSummary.totalXp.toLocaleString()} XP
               </span>
             </div>
           )}

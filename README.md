@@ -5,6 +5,7 @@ Oddlot is a lightweight, client-side multi-game browser arcade platform. Each ga
 ## Available Games
 
 - **SkyPop** (`/games/skypop`) — Pop iridescent soap bubbles across 7 shifting weather fronts, chain high-speed combos, activate 8 tactical power-ups, complete rotating daily challenges, and track lifetime stats & achievements locally.
+- **Meteor Shower** (`/games/meteor-shower`) — Protect a photorealistic 3D Earth from incoming regular, heavy, armored, splitting, explosive, and cosmic meteors across progressive waves, 8 orbital power-ups, and 5 cosmic sectors.
 
 ---
 
@@ -20,7 +21,8 @@ Oddlot is a lightweight, client-side multi-game browser arcade platform. Each ga
 │   │   ├── router.ts              # Subpath routing & GitHub Pages helpers
 │   │   └── components/            # Shared Oddlot landing page & header
 │   ├── games/
-│   │   └── skypop/SkyPopGame.tsx  # SkyPop game entry component
+│   │   ├── skypop/SkyPopGame.tsx  # SkyPop game entry component
+│   │   └── meteor-shower/         # Meteor Shower Three.js scene, engine, audio & HUD
 │   ├── game/                      # SkyPop simulation, renderer, audio, storage
 │   └── components/                # SkyPop HUD, title, pause & stats modals
 └── vite.config.ts                 # Dynamic GitHub Pages base path & dist/404.html generator

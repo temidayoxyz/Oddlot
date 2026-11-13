@@ -1,5 +1,6 @@
 import React from 'react';
 import skypopCoverImg from '../assets/images/skypop_cover_1794605851564.jpg';
+import meteorShowerCoverImg from '../assets/images/meteor_shower_cover_1794607325983.jpg';
 
 export type GameAvailability = 'playable' | 'coming-soon';
 
@@ -44,6 +45,24 @@ export const ODDLOT_GAMES: GameRegistryEntry[] = [
       'Daily challenges & local XP ranks',
     ],
     loadComponent: () => import('../games/skypop/SkyPopGame'),
+  },
+  {
+    slug: 'meteor-shower',
+    title: 'Meteor Shower',
+    tagline: 'Defend Earth from incoming asteroids across deep space.',
+    description:
+      'Protect a photorealistic rotating Earth against multi-hit, splitting, explosive, and cosmic meteors using orbital lasers, shields, and chain-reaction intercepts.',
+    genre: '3D Arcade · Planet Defense',
+    controlsSummary: 'Click or Tap Meteors · Keys 1–8 Abilities · P Pause',
+    status: 'playable',
+    coverImage: meteorShowerCoverImg,
+    accentColor: '#FB923C',
+    highlights: [
+      'Photorealistic 3D Earth & atmosphere',
+      '6 meteor classes & progressive waves',
+      '8 orbital abilities & 5 cosmic sectors',
+    ],
+    loadComponent: () => import('../games/meteor-shower/MeteorShowerGame'),
   },
 ];
 
