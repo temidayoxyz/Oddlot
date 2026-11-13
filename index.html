@@ -2,18 +2,33 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>SkyPop Arcade — Iridescent Sky Bubble Popper</title>
-    <meta name="description" content="Pop iridescent soap bubbles across a living sky with dynamic weather, chain combos, power-ups, and persistent arcade progression." />
-    <meta property="og:title" content="SkyPop Arcade — Iridescent Sky Bubble Popper" />
-    <meta property="og:description" content="Pop iridescent soap bubbles across a living sky with dynamic weather, chain combos, power-ups, and persistent arcade progression." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Oddlot — Original Browser Games</title>
+    <meta name="description" content="Oddlot is a curated collection of original, tactile browser games built to play instantly with local progression and zero friction." />
+    <meta property="og:title" content="Oddlot — Original Browser Games" />
+    <meta property="og:description" content="A growing collection of original, tactile browser games starting with SkyPop." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      (function () {
+        var search = window.location.search;
+        if (!search || search.indexOf('p=') === -1) return;
+        var params = new URLSearchParams(search);
+        var p = params.get('p');
+        if (!p) return;
+        var q = params.get('q');
+        var base = '%BASE_URL%';
+        if (!base.endsWith('/')) base += '/';
+        var cleanRel = p.startsWith('/') ? p.slice(1) : p;
+        var restored = base + cleanRel + (q ? '?' + q : '') + (window.location.hash || '');
+        window.history.replaceState(null, '', restored);
+      })();
+    </script>
   </head>
-  <body data-state="title" class="bg-slate-950 text-white antialiased selection:bg-sky-400/30">
+  <body data-state="platform" class="bg-[#0B0F17] text-slate-100 antialiased selection:bg-sky-400/30">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

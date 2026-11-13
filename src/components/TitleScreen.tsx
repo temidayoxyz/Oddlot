@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, BarChart3, CheckCircle2, Clock, Play, RotateCcw, Settings } from 'lucide-react';
+import { ArrowLeft, Award, BarChart3, CheckCircle2, Clock, Play, RotateCcw, Settings } from 'lucide-react';
 import { getTimeUntilDailyReset } from '../game/dailyChallenges';
 import { getLevelFromXp } from '../game/progression';
 import { DailyChallengesState, LifetimeStats, SavedActiveSession } from '../game/types';
@@ -16,6 +16,7 @@ interface TitleScreenProps {
   onOpenStats: () => void;
   onOpenAchievements: () => void;
   onOpenSettings: () => void;
+  onExitToPlatform?: () => void;
 }
 
 export const TitleScreen: React.FC<TitleScreenProps> = ({
@@ -29,28 +30,41 @@ export const TitleScreen: React.FC<TitleScreenProps> = ({
   onOpenStats,
   onOpenAchievements,
   onOpenSettings,
+  onExitToPlatform,
 }) => {
   const levelInfo = getLevelFromXp(stats.totalXp);
   const resetCountdown = getTimeUntilDailyReset();
 
   return (
     <div className="fixed inset-0 z-10 flex flex-col justify-between overflow-y-auto p-4 sm:p-8 pointer-events-none">
-      {/* Top Bar: Minimal Level & High Score readout */}
-      <div className="flex items-start justify-between gap-4 shrink-0">
-        <div className="hud-panel rounded-2xl px-4 py-3 pointer-events-auto min-w-[190px]">
-          <div className="flex items-baseline justify-between gap-3">
-            <span className="text-xs font-medium text-sky-200/80">
-              Level {levelInfo.level} · {levelInfo.title}
-            </span>
-            <span className="font-mono-num text-xs text-slate-300">
-              {stats.totalXp.toLocaleString()} XP
-            </span>
-          </div>
-          <div className="mt-2 h-1.5 w-full rounded-full bg-white/12 overflow-hidden">
-            <div
-              className="h-full rounded-full bg-sky-300 transition-all duration-300"
-              style={{ width: `${Math.round(levelInfo.progressRatio * 100)}%` }}
-            />
+      {/* Top Bar: Platform Return + Level & High Score readout */}
+      <div className="flex items-start justify-between gap-3 shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-stretch gap-2.5 pointer-events-auto">
+          {onExitToPlatform && (
+            <button
+              type="button"
+              onClick={onExitToPlatform}
+              className="hud-panel inline-flex min-h-[42px] items-center gap-2 rounded-2xl px-3.5 py-2 text-xs font-semibold text-slate-100 transition-colors hover:bg-slate-900/90 focus-visible:outline-2 focus-visible:outline-white whitespace-nowrap shrink-0 self-start sm:self-stretch cursor-pointer"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 text-sky-300" />
+              <span>Oddlot</span>
+            </button>
+          )}
+          <div className="hud-panel rounded-2xl px-4 py-3 min-w-[180px]">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-xs font-medium text-sky-200/80">
+                Level {levelInfo.level} · {levelInfo.title}
+              </span>
+              <span className="font-mono-num text-xs text-slate-300">
+                {stats.totalXp.toLocaleString()} XP
+              </span>
+            </div>
+            <div className="mt-2 h-1.5 w-full rounded-full bg-white/12 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-sky-300 transition-all duration-300"
+                style={{ width: `${Math.round(levelInfo.progressRatio * 100)}%` }}
+              />
+            </div>
           </div>
         </div>
 

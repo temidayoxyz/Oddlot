@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Oddlot — Redirecting...</title>
+    <script>
+      // Fallback 404 SPA redirector (overwritten at build time with resolved Vite base path)
+      (function () {
+        var loc = window.location;
+        var segments = loc.pathname.split('/').filter(Boolean);
+        var isGithubPages = loc.hostname.endsWith('.github.io');
+        var base = isGithubPages && segments.length > 0 ? '/' + segments[0] + '/' : '/';
+        var rel = loc.pathname.indexOf(base) === 0 ? loc.pathname.slice(base.length - 1) : loc.pathname;
+        if (!rel.startsWith('/')) rel = '/' + rel;
+        var encodedPath = encodeURIComponent(rel);
+        var encodedQuery = loc.search ? '&q=' + encodeURIComponent(loc.search.slice(1)) : '';
+        loc.replace(loc.protocol + '//' + loc.host + base + '?p=' + encodedPath + encodedQuery + (loc.hash || ''));
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>

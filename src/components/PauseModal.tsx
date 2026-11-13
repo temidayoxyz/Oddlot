@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Play, RotateCcw, Volume2, VolumeX, Music } from 'lucide-react';
+import { ArrowLeft, Home, Play, RotateCcw, Volume2, VolumeX, Music } from 'lucide-react';
 import { GameSettings } from '../game/types';
 
 interface PauseModalProps {
@@ -10,6 +10,7 @@ interface PauseModalProps {
   onResume: () => void;
   onRestart: () => void;
   onMainMenu: () => void;
+  onExitToPlatform?: () => void;
   onUpdateSettings: (patch: Partial<GameSettings>) => void;
 }
 
@@ -21,6 +22,7 @@ export const PauseModal: React.FC<PauseModalProps> = ({
   onResume,
   onRestart,
   onMainMenu,
+  onExitToPlatform,
   onUpdateSettings,
 }) => {
   return (
@@ -100,7 +102,7 @@ export const PauseModal: React.FC<PauseModalProps> = ({
             <button
               type="button"
               onClick={onRestart}
-              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/15 cursor-pointer"
+              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/15 cursor-pointer whitespace-nowrap"
             >
               <RotateCcw className="w-4 h-4" />
               Restart
@@ -108,12 +110,23 @@ export const PauseModal: React.FC<PauseModalProps> = ({
             <button
               type="button"
               onClick={onMainMenu}
-              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/15 cursor-pointer"
+              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/15 cursor-pointer whitespace-nowrap"
             >
               <Home className="w-4 h-4" />
               Main Menu
             </button>
           </div>
+
+          {onExitToPlatform && (
+            <button
+              type="button"
+              onClick={onExitToPlatform}
+              className="inline-flex min-h-[42px] w-full items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Oddlot
+            </button>
+          )}
         </div>
       </div>
     </div>

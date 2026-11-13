@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, Home, RotateCcw, Trophy } from 'lucide-react';
+import { ArrowLeft, Award, Home, RotateCcw, Trophy } from 'lucide-react';
 import { getLevelFromXp } from '../game/progression';
 import { EndOfRunSummary } from '../game/types';
 
@@ -8,6 +8,7 @@ interface GameOverModalProps {
   totalLifetimeXp: number;
   onReplay: () => void;
   onMainMenu: () => void;
+  onExitToPlatform?: () => void;
 }
 
 export const GameOverModal: React.FC<GameOverModalProps> = ({
@@ -15,6 +16,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   totalLifetimeXp,
   onReplay,
   onMainMenu,
+  onExitToPlatform,
 }) => {
   const levelInfo = getLevelFromXp(totalLifetimeXp);
   const leveledUp = summary.levelAfter > summary.levelBefore;
@@ -179,6 +181,17 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
             Main Menu
           </button>
         </div>
+
+        {onExitToPlatform && (
+          <button
+            type="button"
+            onClick={onExitToPlatform}
+            className="mt-2.5 inline-flex min-h-[42px] w-full items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Oddlot
+          </button>
+        )}
       </div>
     </div>
   );
